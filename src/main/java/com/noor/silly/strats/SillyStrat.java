@@ -158,8 +158,7 @@ public class SillyStrat {
 							currentValueOfXToRisk = startWithXToRisk;
 							initialRiskAmount = currentValueOfXToRisk;
 						}
-						// printResults(winCount, acWinsAmount, acRiskAmount,
-						// sumOfDiffernce, "So Far");
+
 						log.info("----------------------");
 
 						//If we want to stop as soon as we win X number of times in a row
