@@ -45,10 +45,6 @@ public class SillyStrat {
 			stopAtConsecutiveWins = 3;
 		}
 
-//		if(!stopOnceTargetWinsReached){
-//			stopAtConsecutiveWins = 31;
-//		}
-
 		//----------------------------------------------------
 		// Calculation total place holders for all instruments
 		//----------------------------------------------------
