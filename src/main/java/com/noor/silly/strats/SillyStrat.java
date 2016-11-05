@@ -5,6 +5,7 @@ import com.noor.silly.strats.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,12 +23,12 @@ public class SillyStrat {
 
 		int groupSize = 3;
 		int winsEveryXNumber = 3;
-		double startWithXToRisk = 180;
-		double doubleOrTriple = 2.25;
+		double startWithXToRisk = 200;
+		double doubleOrTriple = 2.39;
 
 		int numberOfInstruments = 2;	//Gbp/usd, eur/usd etc
 		int monthsToSimulate = 12;
-		int daysPerMonth = 21;
+		int daysPerMonth = 15;
 
 		//If we want to stop as soon as win X number of times in a row
 		boolean stopOnceTargetWinsReached = true;
@@ -113,6 +114,7 @@ public class SillyStrat {
 						// Double it
 						double preAmount = currentValueOfXToRisk;
 						currentValueOfXToRisk = currentValueOfXToRisk * doubleOrTriple;
+						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
 						log.info(x + ", " + preAmount + " = " + currentValueOfXToRisk);
 						winCount++;
 						consecutiveWins++;
@@ -120,6 +122,7 @@ public class SillyStrat {
 						// Half it
 						double preAmount = currentValueOfXToRisk;
 						currentValueOfXToRisk = currentValueOfXToRisk / 2;
+						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
 						log.info(x + ", " + preAmount + " = " + currentValueOfXToRisk);
 						looseCount++;
 						if(consecutiveWins < stopAtConsecutiveWins)
@@ -133,12 +136,15 @@ public class SillyStrat {
 						if (initialRiskAmount == 0) {
 							diff = diff - startWithXToRisk;
 						}
+						diff = Utils.getPercentToXDecimal(diff, 2);
+
+						//
 						if (currentValueOfXToRisk >= startWithXToRisk / 2) {
 							sumOfDiffernce = sumOfDiffernce + diff;
 							log.info("Difference : " + diff);
 							acWinsAmount = acWinsAmount + currentValueOfXToRisk;
 							acRiskAmount = acRiskAmount + initialRiskAmount;
-							log.info("Win so far : " + (acWinsAmount - acRiskAmount));
+							log.info("Win so far : " + Utils.getPercentToXDecimal(acWinsAmount - acRiskAmount, 2));
 
 							currentValueOfXToRisk = startWithXToRisk + toAdd;
 							initialRiskAmount = currentValueOfXToRisk;
@@ -147,7 +153,7 @@ public class SillyStrat {
 							log.info("Difference : " + diff);
 							acWinsAmount = acWinsAmount + currentValueOfXToRisk;
 							acRiskAmount = acRiskAmount + initialRiskAmount;
-							log.info("Win so far : " + (acWinsAmount - acRiskAmount));
+							log.info("Win so far : " + Utils.getPercentToXDecimal(acWinsAmount - acRiskAmount, 2));
 
 							currentValueOfXToRisk = startWithXToRisk;
 							initialRiskAmount = currentValueOfXToRisk;
@@ -218,12 +224,13 @@ public class SillyStrat {
 				totalWC = totalWC + wc;
 				wc = 0;
 			}
-			log.warn("\nNumber of data sets : " + allData.size() + "\n");
+
 			int elements = allData.get(0).size() * allData.size();
+			double percent = Utils.getPercentToXDecimal((totalWC * 1.0) / elements, 2)*100;
+			log.warn("\nNumber of data sets : " + allData.size() + "");
 			log.warn("Total number of W counts : " + (totalWC));
 			log.warn("Total number of elements : " + (elements));
-			//log.warn("Actual win % : " + ((int)(((allNumberOfWinsCount/elements)*100) * 100)) / 100.0 + "%");
-			log.warn("Actual win % : " + getPercentToXDecimal((totalWC*1.0)/elements, 2) + "%\n");
+			log.warn("Actual win % : " + percent + "%\n");
 		}
 
 		for(Result r: listOfResults){
@@ -234,21 +241,15 @@ public class SillyStrat {
 	private static void printAllWinsResults(List<List<String>> allData, double allWins, double allRisks,
 			int numberOfDaysPerMonth, int months, int allNumberOfWinsCount, String message, int nic, int totalCount) {
 		log.warn("\n-------" + message + "------- : ");
-		log.warn("ALL win  : " + allWins);
-		log.warn("ALL risk : " + allRisks);
-		log.warn("Difference : " + (allWins - allRisks));
 		double totalNDays = totalCount;
-		log.warn("ALL win % : " + (allNumberOfWinsCount) + "/" + (totalNDays) + " = "
-				+ getPercentToXDecimal(allNumberOfWinsCount / totalNDays, 2) + "%");
+		double percent = Utils.getPercentToXDecimal( allNumberOfWinsCount / totalNDays, 2)*100;
+		log.warn("ALL win  : " + Utils.getPercentToXDecimal(allWins,2));
+		log.warn("ALL risk : " + Utils.getPercentToXDecimal(allRisks,2));
+		log.warn("Difference : " + Utils.getPercentToXDecimal(allWins - allRisks, 2));
+		log.warn("ALL win % : " + (allNumberOfWinsCount) + "/" + (totalNDays) + " = " + percent + "%");
 
 		log.warn("-------" + message + "------- : ");
 
-	}
-
-	public static double getPercentToXDecimal(double value, int numberOfDecimalPlace){
-		int ndp = (int) Math.pow(10, numberOfDecimalPlace);
-		double pc = ((int) (((value) * ndp) * ndp)) / 100.0;
-		return pc;
 	}
 
 	public static void printResults(String key, List<String> dataWL, double startWithXToRisk, int numberOfItems,
@@ -262,12 +263,12 @@ public class SillyStrat {
 		if(numberOfItems > 0)
 		log.warn("W Percentage : " + ((winCount * 100 / numberOfItems)) + "%");
 		log.warn("Starting Risk : " + startWithXToRisk);
-		log.warn("Account W Amount : " + acWinsAmount);
+		log.warn("Account W Amount : " + Utils.getPercentToXDecimal(acWinsAmount, 2));
 		log.warn("Risk Amount : " + acRiskAmount);
 		if (sumOfDiffernce < 0) {
-			log.warn("Loss : " + sumOfDiffernce);
+			log.warn("Loss : " + Utils.getPercentToXDecimal(sumOfDiffernce, 2));
 		} else {
-			log.warn("Wins : " + (sumOfDiffernce));
+			log.warn("Wins : " + Utils.getPercentToXDecimal(sumOfDiffernce, 2));
 		}
 		log.warn("-------" + message + "------- : ");
 	}

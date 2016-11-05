@@ -156,4 +156,11 @@ public class Utils {
 
 		return su;
 	}
+
+
+
+	public static double getPercentToXDecimal(double value, int numberOfDecimalPlace){
+		String vv = String.format("%." + numberOfDecimalPlace + "f", value);
+		return Double.parseDouble(vv);
+	}
 }

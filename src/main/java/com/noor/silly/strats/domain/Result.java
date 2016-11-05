@@ -1,5 +1,7 @@
 package com.noor.silly.strats.domain;
 
+import com.noor.silly.strats.utils.Utils;
+
 import java.util.List;
 
 /**
@@ -70,10 +72,15 @@ public class Result {
 
     @Override
     public String toString() {
+        winForThisDataSet = Utils.getPercentToXDecimal(winForThisDataSet, 2);
+        looseForThisDataSet = Utils.getPercentToXDecimal(looseForThisDataSet, 2);
+        totalAmountWin = Utils.getPercentToXDecimal(totalAmountWin, 2);
+        totalAmountLoose = Utils.getPercentToXDecimal(totalAmountLoose, 2);
+
         return //"data : " + data +
                 "Risk £= " + startWithXToRisk + "\twinCount=" + winCount +"\tlooseCount=" + looseCount +"\ttotalPlayed=" + (winCount + looseCount)
-                + "\twinAmont=" + winForThisDataSet + "\tlooseAmount=" + looseForThisDataSet + "\tDIFFERENCE=" + (winForThisDataSet - looseForThisDataSet)
-                + "\twinTotal=" + totalAmountWin+ "\tlooseTotal=" + totalAmountLoose + "\tDIFFERENCETOTAL=" + (totalAmountWin - totalAmountLoose)
+                + "\twinAmont=" + winForThisDataSet + "\tlooseAmount=" + looseForThisDataSet + "\tDIFFERENCE=" + Utils.getPercentToXDecimal((winForThisDataSet - looseForThisDataSet), 2)
+                + "\twinTotal=" + totalAmountWin+ "\tlooseTotal=" + totalAmountLoose + "\tDIFFERENCETOTAL=" + Utils.getPercentToXDecimal((totalAmountWin - totalAmountLoose), 2)
                 + "\t\t" + data
                 + "";
     }
