@@ -1,0 +1,1 @@
+# StupidStrats2# stupid
