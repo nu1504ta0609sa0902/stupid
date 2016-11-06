@@ -1,6 +1,8 @@
 package com.noor.silly.strats.domain;
 
 import com.noor.silly.strats.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -8,6 +10,8 @@ import java.util.List;
  * Created by tayyibah on 05/11/2016.
  */
 public class Result {
+
+    public static final Logger log = LoggerFactory.getLogger(Utils.class);
 
     private final double startWithXToRisk;
     private double totalAmountWin;
@@ -77,11 +81,15 @@ public class Result {
         totalAmountWin = Utils.getPercentToXDecimal(totalAmountWin, 2);
         totalAmountLoose = Utils.getPercentToXDecimal(totalAmountLoose, 2);
 
-        return //"data : " + data +
+        String xx = //"data : " + data +
                 "Risk £= " + startWithXToRisk + "\twinCount=" + winCount +"\tlooseCount=" + looseCount +"\ttotalPlayed=" + (winCount + looseCount)
                 + "\twinAmont=" + winForThisDataSet + "\tlooseAmount=" + looseForThisDataSet + "\tDIFFERENCE=" + Utils.getPercentToXDecimal((winForThisDataSet - looseForThisDataSet), 2)
                 + "\twinTotal=" + totalAmountWin+ "\tlooseTotal=" + totalAmountLoose + "\tDIFFERENCETOTAL=" + Utils.getPercentToXDecimal((totalAmountWin - totalAmountLoose), 2)
                 + "\t\t" + data
                 + "";
+
+        //log.warn(xx);
+
+        return xx;
     }
 }

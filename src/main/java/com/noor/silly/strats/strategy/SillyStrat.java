@@ -1,12 +1,13 @@
-package com.noor.silly.strats;
+package com.noor.silly.strats.strategy;
 
 import com.noor.silly.strats.domain.Result;
+import com.noor.silly.strats.utils.FileUtils;
 import com.noor.silly.strats.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class SillyStrat {
@@ -16,35 +17,51 @@ public class SillyStrat {
 	public static void main(String[] args) {
 
 		log.warn("\n\n--------------New Entry-------------");
-
+		log.warn("Time : " + Calendar.getInstance().getTime());
 		//-----------------------------------
 		//Configurations for data generation
 		//-----------------------------------
 
 		int groupSize = 3;
-		int winsEveryXNumber = 3;
-		double startWithXToRisk = 200;
-		double doubleOrTriple = 2.39;
+		double winsEveryXNumber = 2;
+		double startWithXToRisk = 160;
+		double doubleOrTriple = 2;
 
-		int numberOfInstruments = 2;	//Gbp/usd, eur/usd etc
+		int numberOfInstruments = 1;	//Gbp/usd, eur/usd etc
 		int monthsToSimulate = 12;
-		int daysPerMonth = 15;
+		int daysPerMonth = 21;
 
 		//If we want to stop as soon as win X number of times in a row
 		boolean stopOnceTargetWinsReached = true;
 		int stopAtConsecutiveWins = 3;
 
 		//-----------------------------------
-		//Configuraiton finished
+		//Configuraiton finished OR use file below
 		//-----------------------------------
 
 		//If we read from file, specify the file, file= real data
-		boolean readDataFromFile = false;
+		boolean readDataFromFile = true;
 		String fileKey = "gbp";
 		if(readDataFromFile){
+			groupSize = 3;
+			startWithXToRisk = 240;
 			doubleOrTriple = 2;
+
+			numberOfInstruments = 1;
+			monthsToSimulate = 22;
+			daysPerMonth = 21;		//This needs to be 2 X if fileKey contains 2 currency
+			if(fileKey.length() > 3)
+				daysPerMonth = daysPerMonth * 2;
+
+			stopOnceTargetWinsReached = true;
 			stopAtConsecutiveWins = 3;
+		}else{
+			log.warn("GENERATE WITH SIMULATED DATA");
 		}
+
+		//-----------------------------------
+		//Fiel Configuraiton finished
+		//-----------------------------------
 
 		//----------------------------------------------------
 		// Calculation total place holders for all instruments
@@ -58,7 +75,7 @@ public class SillyStrat {
 		List<Result> listOfResults = new ArrayList<Result>();
 
 		//Generate win range between x and y
-		int winRangeFrom = 6;
+		int winRangeFrom = 4;
 		int winRangeTo = 10;
 
 
@@ -83,9 +100,11 @@ public class SillyStrat {
 				monthCount++;
 				String key = Utils.generateRandomKey("Key");
 				int maxWinCount = Utils.someRandomValueBetween(winRangeFrom, winRangeTo);
-				List<String> dataWL = Utils.getRandomDataWithXPercentOfWins(winsEveryXNumber, numberOfDaysPerMonth, maxWinCount);
+				List<String> dataWL = null;
 				if(readDataFromFile){
-					dataWL = Utils.getDataFromFile(monthCount, numberOfDaysPerMonth, fileKey);
+					dataWL = FileUtils.getDataFromFile(monthCount, numberOfDaysPerMonth, fileKey, "dataWL");
+				}else{
+					dataWL = Utils.getRandomDataWithXPercentOfWins(winsEveryXNumber, numberOfDaysPerMonth, maxWinCount);
 				}
 				allData.add(dataWL);
 
@@ -95,7 +114,7 @@ public class SillyStrat {
 				double acRiskAmount = startWithXToRisk;
 				double acWinsAmount = 0;
 
-				double sumOfDiffernce = 0;
+				double sumOfDifference = 0;
 
 				int count = 1;
 				int winCount = 0;
@@ -140,7 +159,7 @@ public class SillyStrat {
 
 						//
 						if (currentValueOfXToRisk >= startWithXToRisk / 2) {
-							sumOfDiffernce = sumOfDiffernce + diff;
+							sumOfDifference = sumOfDifference + diff;
 							log.info("Difference : " + diff);
 							acWinsAmount = acWinsAmount + currentValueOfXToRisk;
 							acRiskAmount = acRiskAmount + initialRiskAmount;
@@ -149,7 +168,7 @@ public class SillyStrat {
 							currentValueOfXToRisk = startWithXToRisk + toAdd;
 							initialRiskAmount = currentValueOfXToRisk;
 						} else {
-							sumOfDiffernce = sumOfDiffernce + diff;
+							sumOfDifference = sumOfDifference + diff;
 							log.info("Difference : " + diff);
 							acWinsAmount = acWinsAmount + currentValueOfXToRisk;
 							acRiskAmount = acRiskAmount + initialRiskAmount;
@@ -174,7 +193,7 @@ public class SillyStrat {
 
 				} // Finished looping a single data set
 
-				printResults(key, dataWL, startWithXToRisk, winCount+looseCount, winCount, acWinsAmount, acRiskAmount, sumOfDiffernce, "Final Results");
+				printResults(key, dataWL, startWithXToRisk, winCount+looseCount, winCount, acWinsAmount, acRiskAmount, sumOfDifference, "Data set summary");
 
 				numberOfMonthsCounter--;
 
@@ -203,15 +222,18 @@ public class SillyStrat {
 		printAllWinsResults(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of All",
 				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount);
 
-		printDataSet(listOfResults, allData, allNumberOfWinsCount);
+		printDataSet(listOfResults, allData);
+
+		printAllWinsResults(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of All",
+				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount);
 
 		log.warn("--------------Entry Completed-------------");
 	}
 
-	private static void printDataSet(List<Result> listOfResults, List<List<String>> allData, double allNumberOfWinsCount) {
+	private static void printDataSet(List<Result> listOfResults, List<List<String>> allData) {
 		log.warn("\nData Sets : ");
+		int totalWC = 0;
 		if (allData != null) {
-			int totalWC = 0;
 			for (List<String> x : allData) {
 				int wc = 0;
 				for(String w: x){
@@ -224,17 +246,19 @@ public class SillyStrat {
 				wc = 0;
 			}
 
-			int elements = allData.get(0).size() * allData.size();
-			double percent = Utils.getPercentToXDecimal((totalWC * 1.0) / elements, 2)*100;
-			log.warn("\nNumber of data sets : " + allData.size() + "");
-			log.warn("Total number of W counts : " + (totalWC));
-			log.warn("Total number of elements : " + (elements));
-			log.warn("Actual win % : " + percent + "%\n");
 		}
 
+		System.out.println();
 		for(Result r: listOfResults){
 			System.out.println(r);
 		}
+
+		int elements = allData.get(0).size() * allData.size();
+		double percent = Utils.getPercentToXDecimal((totalWC * 1.0) / elements, 2)*100;
+		log.warn("\nNumber of data sets : " + allData.size() + "");
+		log.warn("Total number of W counts : " + (totalWC));
+		log.warn("Total number of elements : " + (elements));
+		log.warn("Actual win % : " + percent + "%\n");
 	}
 
 	private static void printAllWinsResults(List<List<String>> allData, double allWins, double allRisks,
@@ -246,7 +270,6 @@ public class SillyStrat {
 		log.warn("ALL risk : " + Utils.getPercentToXDecimal(allRisks,2));
 		log.warn("Difference : " + Utils.getPercentToXDecimal(allWins - allRisks, 2));
 		log.warn("ALL win % : " + (allNumberOfWinsCount) + "/" + (totalNDays) + " = " + percent + "%");
-
 		log.warn("-------" + message + "------- : ");
 
 	}

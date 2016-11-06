@@ -8,16 +8,12 @@ import java.util.*;
 
 public class Utils {
 
-	static Map<String, List<String>> mapOfDataToFileKey = new HashMap<String, List<String>>();
 
 	public static final Logger log = LoggerFactory.getLogger(Utils.class);
 
-	public static List<String> getRandomDataWithXPercentOfWins(int winsEveryX, int numberOfData, int maxWinCount) {
+	public static List<String> getRandomDataWithXPercentOfWins(double winsEveryX, int numberOfData, int maxWinCount) {
 		List<String> listOfDataItems = new ArrayList<String>();
 
-		// int maxWinCount = (int)((1.0 / winsEveryX) * numberOfData);
-		// maxWinCount = maxWinCount + someRandomValueBetween(1,3, maxWinCount,
-		// numberOfData);
 		int numberOfWinsGenerated = 0;
 
 		do {
@@ -77,9 +73,9 @@ public class Utils {
 
 
 
-	public static String getRandomWLValue(int winsEveryX) {
+	public static String getRandomWLValue(double winsEveryX) {
 		int randomNumber = new Random().nextInt(9000) + 1000;
-		int reminder = randomNumber % winsEveryX;
+		double reminder = randomNumber % winsEveryX;
 
 		if (reminder == 0) {
 			return "W";
@@ -102,65 +98,33 @@ public class Utils {
 		return 100;
 	}
 
-	/**
-	 * Read a list of items from file
-	 * @return
-	 * @param monthCount
-	 * @param numberOfDaysPerMonth
-	 */
-	public static List<String> getDataFromFile(int monthCount, int numberOfDaysPerMonth, String fileKey) {
-		int from = 0;
-		int to = numberOfDaysPerMonth;
-		if(monthCount > 1){
-			from = (monthCount-1) * numberOfDaysPerMonth;
-			to = monthCount * numberOfDaysPerMonth;
-		}
-
-		List<String> data = mapOfDataToFileKey.get(fileKey);
-
-		if(data == null) {
-			data = new ArrayList<String>();
-
-			String root = new File("").getAbsolutePath();
-			String location = root + File.separator + "src/test/resources" + "/data/dataWL" + fileKey + ".txt";
-			location = location.replace("SillyStrats1", "sillystratsm1");
-			//Read file content
-			try {
-				FileReader fr = new FileReader(new File(location));
-				BufferedReader br = new BufferedReader(fr);
-
-				String line = "";
-				while ((line = br.readLine()) != null) {
-					if (line.equals("W") || line.equals("L"))
-						data.add(line);
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			mapOfDataToFileKey.put(fileKey, data);
-
-			System.out.println("Items count in file : " + data.size());
-		}
-
-		//Get data between a range
-		List<String> su = new ArrayList<String>();
-		try {
-			su = data.subList(from, to);
-		}catch(IndexOutOfBoundsException e){
-			if(from < data.size() - 1)
-			su = data.subList(from, data.size()-1);
-		}
-
-		return su;
-	}
-
-
 
 	public static double getPercentToXDecimal(double value, int numberOfDecimalPlace){
 		String vv = String.format("%." + numberOfDecimalPlace + "f", value);
 		return Double.parseDouble(vv);
+	}
+
+	public static List<String> generateRandomBuySellOrders(int daysPerMonth){
+
+		List<String> listOfBuySellOrders = new ArrayList<String>();
+
+		for(int c = 0; c < daysPerMonth; c++) {
+			long time = System.nanoTime();
+			try {
+				Thread.sleep(11);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			if (time % 2 == 0) {
+				//System.out.println("Buy");
+				listOfBuySellOrders.add("Buy");
+			}else{
+				//System.out.println("Sell");
+				listOfBuySellOrders.add("Sell");
+			}
+		}
+
+		return listOfBuySellOrders;
 	}
 }
