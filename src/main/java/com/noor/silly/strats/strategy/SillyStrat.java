@@ -28,7 +28,7 @@ public class SillyStrat {
 		double doubleOrTriple = 2;
 
 		int numberOfInstruments = 1;	//Gbp/usd, eur/usd etc
-		int monthsToSimulate = 12;
+		int monthsToSimulate = 3;
 		int daysPerMonth = 21;
 
 		//If we want to stop as soon as win X number of times in a row
@@ -43,8 +43,8 @@ public class SillyStrat {
 		boolean readDataFromFile = true;
 		String fileKey = "gbp";
 		if(readDataFromFile){
-			groupSize = 3;
-			startWithXToRisk = 240;
+			groupSize = 5;
+			startWithXToRisk = 160;
 			doubleOrTriple = 2;
 
 			numberOfInstruments = 1;
@@ -62,6 +62,15 @@ public class SillyStrat {
 		//-----------------------------------
 		//Fiel Configuraiton finished
 		//-----------------------------------
+
+		// Group size, X to risk at beginning of each group, if set to true
+		// it will base it on SL and startWithXToRisk amount
+		//boolean calculateStartXAgainstSL = true;
+		//if (calculateStartXAgainstSL) {
+//			int sl = 25;
+//			startWithXToRisk = Utils.getInitialRiskAmount(groupSize, sl, calculateStartXAgainstSL);
+//		}
+		int toAdd = (int) (startWithXToRisk / 2);
 
 		//----------------------------------------------------
 		// Calculation total place holders for all instruments
@@ -82,15 +91,6 @@ public class SillyStrat {
 		for (int nic = 0; nic < numberOfInstruments; nic++) {
 			
 			int numberOfMonthsCounter = monthsToSimulate;
-
-			// Group size, X to risk at beginning of each group, if set to true
-			// it will base it on SL and startWithXToRisk amount
-			//boolean calculateStartXAgainstSL = false;
-			//if (calculateStartXAgainstSL) {
-			//	int sl = 25;
-			//	startWithXToRisk = Utils.getInitialRiskAmount(groupSize, sl, calculateStartXAgainstSL);
-			//}
-			int toAdd = (int) (startWithXToRisk / 2);
 
 			// Win rate calculation
 			int numberOfDaysPerMonth = daysPerMonth;
@@ -128,10 +128,11 @@ public class SillyStrat {
 				//For each of the data set calculate
 				for (String x : dataWL) {
 
+					double preAmount = currentValueOfXToRisk;
 					// Calculate doubling or halving
 					if (x.equals("W")) {
 						// Double it
-						double preAmount = currentValueOfXToRisk;
+						//double preAmount = currentValueOfXToRisk;
 						currentValueOfXToRisk = currentValueOfXToRisk * doubleOrTriple;
 						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
 						log.info(x + ", " + preAmount + " = " + currentValueOfXToRisk);
@@ -139,7 +140,7 @@ public class SillyStrat {
 						consecutiveWins++;
 					} else {
 						// Half it
-						double preAmount = currentValueOfXToRisk;
+						//double preAmount = currentValueOfXToRisk;
 						currentValueOfXToRisk = currentValueOfXToRisk / 2;
 						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
 						log.info(x + ", " + preAmount + " = " + currentValueOfXToRisk);
@@ -157,26 +158,32 @@ public class SillyStrat {
 						}
 						diff = Utils.getPercentToXDecimal(diff, 2);
 
+						sumOfDifference = sumOfDifference + diff;
+						log.info("Difference : " + diff);
+						acWinsAmount = acWinsAmount + currentValueOfXToRisk;
+						acRiskAmount = acRiskAmount + initialRiskAmount;
+						log.info("Win so far : " + Utils.getPercentToXDecimal(acWinsAmount - acRiskAmount, 2));
 						//
 						if (currentValueOfXToRisk >= startWithXToRisk / 2) {
-							sumOfDifference = sumOfDifference + diff;
-							log.info("Difference : " + diff);
-							acWinsAmount = acWinsAmount + currentValueOfXToRisk;
-							acRiskAmount = acRiskAmount + initialRiskAmount;
-							log.info("Win so far : " + Utils.getPercentToXDecimal(acWinsAmount - acRiskAmount, 2));
+							//sumOfDifference = sumOfDifference + diff;
+							//log.info("Difference : " + diff);
+							//acWinsAmount = acWinsAmount + currentValueOfXToRisk;
+							//acRiskAmount = acRiskAmount + initialRiskAmount;
+							//log.info("Win so far : " + Utils.getPercentToXDecimal(acWinsAmount - acRiskAmount, 2));
 
 							currentValueOfXToRisk = startWithXToRisk + toAdd;
-							initialRiskAmount = currentValueOfXToRisk;
+							//initialRiskAmount = currentValueOfXToRisk;
 						} else {
-							sumOfDifference = sumOfDifference + diff;
-							log.info("Difference : " + diff);
-							acWinsAmount = acWinsAmount + currentValueOfXToRisk;
-							acRiskAmount = acRiskAmount + initialRiskAmount;
-							log.info("Win so far : " + Utils.getPercentToXDecimal(acWinsAmount - acRiskAmount, 2));
+							//sumOfDifference = sumOfDifference + diff;
+							//log.info("Difference : " + diff);
+							//acWinsAmount = acWinsAmount + currentValueOfXToRisk;
+							//acRiskAmount = acRiskAmount + initialRiskAmount;
+							//log.info("Win so far : " + Utils.getPercentToXDecimal(acWinsAmount - acRiskAmount, 2));
 
 							currentValueOfXToRisk = startWithXToRisk;
-							initialRiskAmount = currentValueOfXToRisk;
+							//initialRiskAmount = currentValueOfXToRisk;
 						}
+						initialRiskAmount = currentValueOfXToRisk;
 
 						log.info("----------------------");
 
