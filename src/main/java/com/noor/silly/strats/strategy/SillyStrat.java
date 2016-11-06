@@ -156,7 +156,7 @@ public class SillyStrat {
 						consecutiveWins = 0;
 					}
 
-					// End of the group sum up results, reset
+					// End of the group sum up results, reset and keep track
 					if (entryNumber != 1 && entryNumber % groupSize == 0) {
 						double diff = currentValueOfXToRisk - initialRiskAmount;
 						if (initialRiskAmount == 0) {
@@ -213,14 +213,6 @@ public class SillyStrat {
 
 		printReportToScreen(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of ALL",
 				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount, listOfResults);
-
-//		printAllWinsResults(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of All",
-//				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount);
-//
-//		printDataSet(listOfResults, allData);
-//
-//		printAllWinsResults(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of All",
-//				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount);
 
 		log.warn("--------------Entry Completed-------------");
 	}
