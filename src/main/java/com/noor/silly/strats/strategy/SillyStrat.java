@@ -18,33 +18,46 @@ public class SillyStrat {
 
 		log.warn("\n\n--------------New Entry-------------");
 		log.warn("Time : " + Calendar.getInstance().getTime());
+
 		//-----------------------------------
-		//Configurations for data generation
 		//-----------------------------------
+
+		/**
+		 * Configurations for data generation
+		 *
+		 * Option to override simulation with
+		 * real data from file
+		 *
+		 * See below
+		 */
 
 		int groupSize = 3;
-		double winsEveryXNumber = 2;
+		double winsEveryXNumber = 3;
 		double startWithXToRisk = 160;
 		double doubleOrTriple = 2;
-
-		int numberOfInstruments = 1;	//Gbp/usd, eur/usd etc
-		int monthsToSimulate = 3;
-		int daysPerMonth = 21;
 
 		//If we want to stop as soon as win X number of times in a row
 		boolean stopOnceTargetWinsReached = true;
 		int stopAtConsecutiveWins = 3;
 
+		int numberOfInstruments = 1;	//Gbp/usd, eur/usd etc
+		int monthsToSimulate = 3;
+		int daysPerMonth = 21;
+
+		//Generate win range between x and y
+		int winRangeFrom = 4;
+		int winRangeTo = 10;
+
 		//-----------------------------------
-		//Configuraiton finished OR use file below
+		//Overide with file configuration
 		//-----------------------------------
 
 		//If we read from file, specify the file, file= real data
-		boolean readDataFromFile = true;
+		boolean readDataFromFile = false;
 		String fileKey = "gbp";
 		if(readDataFromFile){
 			groupSize = 5;
-			startWithXToRisk = 160;
+			startWithXToRisk = 400;
 			doubleOrTriple = 2;
 
 			numberOfInstruments = 1;
@@ -59,8 +72,10 @@ public class SillyStrat {
 			log.warn("GENERATE WITH SIMULATED DATA");
 		}
 
+		/**
+		 * File Configuraiton finished
+		 */
 		//-----------------------------------
-		//Fiel Configuraiton finished
 		//-----------------------------------
 
 		// Group size, X to risk at beginning of each group, if set to true
@@ -83,11 +98,7 @@ public class SillyStrat {
 		List<List<String>> allData = new ArrayList<List<String>>();
 		List<Result> listOfResults = new ArrayList<Result>();
 
-		//Generate win range between x and y
-		int winRangeFrom = 4;
-		int winRangeTo = 10;
-
-
+		//For each instrument generate either simulated WL or read from file
 		for (int nic = 0; nic < numberOfInstruments; nic++) {
 			
 			int numberOfMonthsCounter = monthsToSimulate;
@@ -99,40 +110,37 @@ public class SillyStrat {
 			do {
 				monthCount++;
 				String key = Utils.generateRandomKey("Key");
-				int maxWinCount = Utils.someRandomValueBetween(winRangeFrom, winRangeTo);
+
+				//Generate simulated data or load from file
 				List<String> dataWL = null;
 				if(readDataFromFile){
 					dataWL = FileUtils.getDataFromFile(monthCount, numberOfDaysPerMonth, fileKey, "dataWL");
 				}else{
+					int maxWinCount = Utils.someRandomValueBetween(winRangeFrom, winRangeTo);
 					dataWL = Utils.getRandomDataWithXPercentOfWins(winsEveryXNumber, numberOfDaysPerMonth, maxWinCount);
 				}
 				allData.add(dataWL);
 
-				double initialRiskAmount = 0;
+				//Place holders: Reset before processing a set of data
 				double currentValueOfXToRisk = startWithXToRisk;
-
+				double initialRiskAmount = 0;
 				double acRiskAmount = startWithXToRisk;
 				double acWinsAmount = 0;
-
 				double sumOfDifference = 0;
 
-				int count = 1;
+				int entryNumber = 1;
 				int winCount = 0;
 				int looseCount = 0;
-
-				Result result = new Result(startWithXToRisk);
 
 				log.info(key);
 				log.info("-----");
 
 				//For each of the data set calculate
 				for (String x : dataWL) {
-
 					double preAmount = currentValueOfXToRisk;
 					// Calculate doubling or halving
 					if (x.equals("W")) {
 						// Double it
-						//double preAmount = currentValueOfXToRisk;
 						currentValueOfXToRisk = currentValueOfXToRisk * doubleOrTriple;
 						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
 						log.info(x + ", " + preAmount + " = " + currentValueOfXToRisk);
@@ -140,7 +148,6 @@ public class SillyStrat {
 						consecutiveWins++;
 					} else {
 						// Half it
-						//double preAmount = currentValueOfXToRisk;
 						currentValueOfXToRisk = currentValueOfXToRisk / 2;
 						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
 						log.info(x + ", " + preAmount + " = " + currentValueOfXToRisk);
@@ -148,10 +155,9 @@ public class SillyStrat {
 						if(consecutiveWins < stopAtConsecutiveWins)
 						consecutiveWins = 0;
 					}
-					// log.info(total);
 
 					// End of the group sum up results, reset
-					if (count != 1 && count % groupSize == 0) {
+					if (entryNumber != 1 && entryNumber % groupSize == 0) {
 						double diff = currentValueOfXToRisk - initialRiskAmount;
 						if (initialRiskAmount == 0) {
 							diff = diff - startWithXToRisk;
@@ -159,29 +165,16 @@ public class SillyStrat {
 						diff = Utils.getPercentToXDecimal(diff, 2);
 
 						sumOfDifference = sumOfDifference + diff;
-						log.info("Difference : " + diff);
 						acWinsAmount = acWinsAmount + currentValueOfXToRisk;
 						acRiskAmount = acRiskAmount + initialRiskAmount;
+						log.info("Difference : " + diff);
 						log.info("Win so far : " + Utils.getPercentToXDecimal(acWinsAmount - acRiskAmount, 2));
-						//
+
+						//If we have more than half of what we started with add to the new initial start with value
 						if (currentValueOfXToRisk >= startWithXToRisk / 2) {
-							//sumOfDifference = sumOfDifference + diff;
-							//log.info("Difference : " + diff);
-							//acWinsAmount = acWinsAmount + currentValueOfXToRisk;
-							//acRiskAmount = acRiskAmount + initialRiskAmount;
-							//log.info("Win so far : " + Utils.getPercentToXDecimal(acWinsAmount - acRiskAmount, 2));
-
 							currentValueOfXToRisk = startWithXToRisk + toAdd;
-							//initialRiskAmount = currentValueOfXToRisk;
 						} else {
-							//sumOfDifference = sumOfDifference + diff;
-							//log.info("Difference : " + diff);
-							//acWinsAmount = acWinsAmount + currentValueOfXToRisk;
-							//acRiskAmount = acRiskAmount + initialRiskAmount;
-							//log.info("Win so far : " + Utils.getPercentToXDecimal(acWinsAmount - acRiskAmount, 2));
-
 							currentValueOfXToRisk = startWithXToRisk;
-							//initialRiskAmount = currentValueOfXToRisk;
 						}
 						initialRiskAmount = currentValueOfXToRisk;
 
@@ -195,8 +188,7 @@ public class SillyStrat {
 
 					}
 
-
-					count++;
+					entryNumber++;
 
 				} // Finished looping a single data set
 
@@ -204,37 +196,56 @@ public class SillyStrat {
 
 				numberOfMonthsCounter--;
 
+				//Keep track of winnings
 				allWins = allWins + acWinsAmount;
 				allRisks = allRisks + acRiskAmount;
 				allNumberOfWinsCount = allNumberOfWinsCount + winCount;
 				allNumberOfLooseCount = allNumberOfLooseCount + looseCount;
 
 				//Store results for reporting
-				result.setWinCount(winCount);
-				result.setLooseCount(looseCount);
-				result.setTotalAmountWin(allWins);
-				result.setTotalAmountLoose(allRisks);
-				result.setWinThisDataSet(acWinsAmount);
-				result.setLooseThisDataset(acRiskAmount);
-				result.addDataSet(dataWL);
+				Result result = getResults(startWithXToRisk, winCount, looseCount, allWins, allRisks, acWinsAmount, acRiskAmount, dataWL);
 
 				listOfResults.add(result);
 
 			} while (numberOfMonthsCounter > 0); // Finished all data sets
 
-			//printAllWinsResults(null, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of All", nic);
-
 		} // Finished FOR Loop
 
-		printAllWinsResults(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of All",
-				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount);
+		printReportToScreen(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of ALL",
+				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount, listOfResults);
+
+//		printAllWinsResults(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of All",
+//				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount);
+//
+//		printDataSet(listOfResults, allData);
+//
+//		printAllWinsResults(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of All",
+//				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount);
+
+		log.warn("--------------Entry Completed-------------");
+	}
+
+	private static void printReportToScreen(List<List<String>> allData, double allWins, double allRisks, int daysPerMonth, int monthsToSimulate, int allNumberOfWinsCount,
+											String message, int numberOfInstruments, int totalCount, List<Result> listOfResults) {
+		printAllWinsResults(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, message,
+				numberOfInstruments, totalCount);
 
 		printDataSet(listOfResults, allData);
 
-		printAllWinsResults(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of All",
-				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount);
+		printAllWinsResults(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, message,
+				numberOfInstruments, totalCount);
+	}
 
-		log.warn("--------------Entry Completed-------------");
+	private static Result getResults(double startWithXToRisk, int winCount, int looseCount, double allWins, double allRisks, double acWinsAmount, double acRiskAmount, List<String> dataWL) {
+		Result result = new Result(startWithXToRisk);
+		result.setWinCount(winCount);
+		result.setLooseCount(looseCount);
+		result.setTotalAmountWin(allWins);
+		result.setTotalAmountLoose(allRisks);
+		result.setWinThisDataSet(acWinsAmount);
+		result.setLooseThisDataset(acRiskAmount);
+		result.addDataSet(dataWL);
+		return result;
 	}
 
 	private static void printDataSet(List<Result> listOfResults, List<List<String>> allData) {
