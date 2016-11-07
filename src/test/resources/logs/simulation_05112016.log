@@ -1,67 +1,67 @@
 
 
 --------------New Entry-------------
-Time : Sun Nov 06 20:29:21 GMT 2016
+Time : Mon Nov 07 09:10:41 GMT 2016
 GENERATE WITH SIMULATED DATA
 
 -------Data set summary------- : 
-Data : [L, L, L, W, W, W, L, W, L, L, L, W, L, L, L, L, L, L, L, L, L]
-Key : Key277319
-Win count : 3
-Loss count : 3
-W Percentage : 50%
+Data : [W, L, L, L, L, L, L, L, L, L, L, L, W, L, L, W, W, L, L, L, L]
+Key : Key328830
+Win count : 4
+Loss count : 17
+W Percentage : 19%
 Starting Risk : 160.0
-Account W Amount : 1300.0
-Risk Amount : 320.0
-Wins : 980.0
+Account W Amount : 740.0
+Risk Amount : 1360.0
+Loss : -620.0
 -------Data set summary------- : 
 
 -------Data set summary------- : 
-Data : [W, L, W, L, L, W, W, L, L, W, L, L, L, L, L, L, L, L, L, L, L]
-Key : Key634508
-Win count : 5
-Loss count : 16
-W Percentage : 23%
+Data : [W, W, L, W, W, L, W, W, L, L, W, L, L, W, L, L, L, L, L, L, L]
+Key : Key637353
+Win count : 8
+Loss count : 13
+W Percentage : 38%
 Starting Risk : 160.0
-Account W Amount : 750.0
-Risk Amount : 1440.0
-Loss : -690.0
--------Data set summary------- : 
-
--------Data set summary------- : 
-Data : [W, L, L, W, W, L, L, W, W, L, L, L, L, W, L, L, W, L, L, L, L]
-Key : Key33427
-Win count : 7
-Loss count : 14
-W Percentage : 33%
-Starting Risk : 160.0
-Account W Amount : 1300.0
+Account W Amount : 1570.0
 Risk Amount : 1520.0
-Loss : -220.0
+Wins : 50.0
+-------Data set summary------- : 
+
+-------Data set summary------- : 
+Data : [W, L, W, L, L, L, L, L, L, L, L, L, W, L, W, L, L, L, L, L, L]
+Key : Key993672
+Win count : 4
+Loss count : 17
+W Percentage : 19%
+Starting Risk : 160.0
+Account W Amount : 760.0
+Risk Amount : 1280.0
+Loss : -520.0
 -------Data set summary------- : 
 
 -------Sum Of ALL------- : 
-ALL win  : 3350.0
-ALL risk : 3280.0
-Difference : 70.0
-ALL win % : 15/48.0 = 31.0%
+ALL win  : 3070.0
+ALL risk : 4160.0
+Difference : -1090.0
+ALL win % : 16/63.0 = 25.0%
 -------Sum Of ALL------- : 
 
 Data Sets : 
-[L, L, L, W, W, W, L, W, L, L, L, W, L, L, L, L, L, L, L, L, L], W=5
-[W, L, W, L, L, W, W, L, L, W, L, L, L, L, L, L, L, L, L, L, L], W=5
-[W, L, L, W, W, L, L, W, W, L, L, L, L, W, L, L, W, L, L, L, L], W=7
+[W, L, L, L, L, L, L, L, L, L, L, L, W, L, L, W, W, L, L, L, L], W=4
+[W, W, L, W, W, L, W, W, L, L, W, L, L, W, L, L, L, L, L, L, L], W=8
+[W, L, W, L, L, L, L, L, L, L, L, L, W, L, W, L, L, L, L, L, L], W=4
 
 Number of data sets : 3
-Total number of W counts : 17
+Total number of W counts : 16
 Total number of elements : 63
-Actual win % : 27.0%
+Actual win % : 25.0%
 
 
 -------Sum Of ALL------- : 
-ALL win  : 3350.0
-ALL risk : 3280.0
-Difference : 70.0
-ALL win % : 15/48.0 = 31.0%
+ALL win  : 3070.0
+ALL risk : 4160.0
+Difference : -1090.0
+ALL win % : 16/63.0 = 25.0%
 -------Sum Of ALL------- : 
 --------------Entry Completed-------------

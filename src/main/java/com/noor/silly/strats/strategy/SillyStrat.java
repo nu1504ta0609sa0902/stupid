@@ -20,6 +20,7 @@ public class SillyStrat {
 		log.warn("Time : " + Calendar.getInstance().getTime());
 
 		//-----------------------------------
+		// READ first READ first
 		//-----------------------------------
 
 		/**
