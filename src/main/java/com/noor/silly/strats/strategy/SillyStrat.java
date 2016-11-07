@@ -32,7 +32,10 @@ public class SillyStrat {
 		 * See below
 		 */
 
-		int groupSize = 3;
+		//Controls configuration either SIMULATED OR FILE DATA
+		boolean readDataFromFile = true;
+
+		int groupSize = 3;		//This has no relation to consecutiveWins
 		double winsEveryXNumber = 3;
 		double startWithXToRisk = 160;
 		double doubleOrTriple = 2;
@@ -54,11 +57,10 @@ public class SillyStrat {
 		//-----------------------------------
 
 		//If we read from file, specify the file, file= real data
-		boolean readDataFromFile = false;
-		String fileKey = "gbp";
+		String fileKey = "gbpeur";
 		if(readDataFromFile){
 			groupSize = 5;
-			startWithXToRisk = 400;
+			startWithXToRisk = 320;
 			doubleOrTriple = 2;
 
 			numberOfInstruments = 1;
@@ -68,10 +70,16 @@ public class SillyStrat {
 				daysPerMonth = daysPerMonth * 2;
 
 			stopOnceTargetWinsReached = true;
-			stopAtConsecutiveWins = 3;
+			//stopAtConsecutiveWins = (groupSize/2)+2;
+			stopAtConsecutiveWins = 6;
+			log.warn("GENERATE WITH REAL DATA FROM FILE");
+			fileKey = fileKey.toLowerCase();
 		}else{
 			log.warn("GENERATE WITH SIMULATED DATA");
 		}
+
+		log.warn("Group size : " + groupSize);
+		log.warn("Stop at consecutive wins : " + stopAtConsecutiveWins);
 
 		/**
 		 * File Configuraiton finished
@@ -277,12 +285,26 @@ public class SillyStrat {
 		log.warn("\n-------" + message + "------- : ");
 		double totalNDays = totalCount;
 		double percent = Utils.getPercentToXDecimal( allNumberOfWinsCount / totalNDays, 2)*100;
+
+		double elements = getNumberOfTotalElements(allData);
+		double percentPlayed = Utils.getPercentToXDecimal( totalNDays / elements, 2)*100;
 		log.warn("ALL win  : " + Utils.getPercentToXDecimal(allWins,2));
 		log.warn("ALL risk : " + Utils.getPercentToXDecimal(allRisks,2));
 		log.warn("Difference : " + Utils.getPercentToXDecimal(allWins - allRisks, 2));
 		log.warn("ALL win % : " + (allNumberOfWinsCount) + "/" + (totalNDays) + " = " + percent + "%");
+		log.warn("Percentage played : " + percentPlayed + "%, Out of : " + elements + " = " + totalNDays );
 		log.warn("-------" + message + "------- : ");
 
+	}
+
+	private static int getNumberOfTotalElements(List<List<String>> allData) {
+		int noe = 0;
+		for(List<String> lor: allData){
+			for(String loi: lor){
+				noe++;
+			}
+		}
+		return  noe;
 	}
 
 	public static void printResults(String key, List<String> dataWL, double startWithXToRisk, int numberOfItems,
