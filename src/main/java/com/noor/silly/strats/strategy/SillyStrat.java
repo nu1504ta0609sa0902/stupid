@@ -109,7 +109,7 @@ public class SillyStrat {
 
 		//For each instrument generate either simulated WL or read from file
 		for (int nic = 0; nic < numberOfInstruments; nic++) {
-			
+
 			int numberOfMonthsCounter = monthsToSimulate;
 
 			// Win rate calculation
@@ -162,7 +162,7 @@ public class SillyStrat {
 						log.info(x + ", " + preAmount + " = " + currentValueOfXToRisk);
 						looseCount++;
 						if(consecutiveWins < stopAtConsecutiveWins)
-						consecutiveWins = 0;
+							consecutiveWins = 0;
 					}
 
 					// End of the group sum up results, reset and keep track
@@ -281,7 +281,7 @@ public class SillyStrat {
 	}
 
 	private static void printAllWinsResults(List<List<String>> allData, double allWins, double allRisks,
-			int numberOfDaysPerMonth, int months, int allNumberOfWinsCount, String message, int nic, int totalCount) {
+											int numberOfDaysPerMonth, int months, int allNumberOfWinsCount, String message, int nic, int totalCount) {
 		log.warn("\n-------" + message + "------- : ");
 		double totalNDays = totalCount;
 		double percent = Utils.getPercentToXDecimal( allNumberOfWinsCount / totalNDays, 2)*100;
@@ -308,7 +308,7 @@ public class SillyStrat {
 	}
 
 	public static void printResults(String key, List<String> dataWL, double startWithXToRisk, int numberOfItems,
-			int winCount, double acWinsAmount, double acRiskAmount, double sumOfDiffernce, String message) {
+									int winCount, double acWinsAmount, double acRiskAmount, double sumOfDiffernce, String message) {
 
 		log.warn("\n-------" + message + "------- : ");
 		log.warn("Data : " + dataWL);
@@ -316,7 +316,7 @@ public class SillyStrat {
 		log.warn("Win count : " + winCount);
 		log.warn("Loss count : " + (numberOfItems - winCount));
 		if(numberOfItems > 0)
-		log.warn("W Percentage : " + ((winCount * 100 / numberOfItems)) + "%");
+			log.warn("W Percentage : " + ((winCount * 100 / numberOfItems)) + "%");
 		log.warn("Starting Risk : " + startWithXToRisk);
 		log.warn("Account W Amount : " + Utils.getPercentToXDecimal(acWinsAmount, 2));
 		log.warn("Risk Amount : " + acRiskAmount);
