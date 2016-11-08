@@ -184,12 +184,34 @@ public class FileUtils {
 
     private static List<String> getFileNames() {
         List<String> files = new ArrayList<String>();
-        files.add("gbp,eur");
-        files.add("gbp,dji");
-        files.add("eur,gbp");
-        files.add("eur,dji");
-        files.add("dji,gbp");
-        files.add("dji,eur");
+        //Data from 6.57
+        files.add("07gbp,07eur");
+        files.add("07gbp,07dji");
+        files.add("07eur,07gbp");
+        files.add("07eur,07dji");
+        files.add("07dji,07gbp");
+        files.add("07dji,07eur");
+        //Data from 7.57
+        files.add("08gbp,08eur");
+        files.add("08gbp,08dji");
+        files.add("08eur,08gbp");
+        files.add("08eur,08dji");
+        files.add("08dji,08gbp");
+        files.add("08dji,08eur");
+        //Data from 11.57
+        files.add("12gbp,12eur");
+        files.add("12gbp,12dji");
+        files.add("12eur,12gbp");
+        files.add("12eur,12dji");
+        files.add("12dji,12gbp");
+        files.add("12dji,12eur");
+        //Data from 13.57
+        files.add("14gbp,14eur");
+        files.add("14gbp,14dji");
+        files.add("14eur,14gbp");
+        files.add("14eur,14dji");
+        files.add("14dji,14gbp");
+        files.add("14dji,14eur");
 
         return files;
     }

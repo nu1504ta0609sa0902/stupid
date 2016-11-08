@@ -57,28 +57,36 @@ public class SillyStrat {
 		//-----------------------------------
 
 		//If we read from file, specify the file, file= real data
-		String fileKey = "gbpeur";
+		String fileKey = "gbp";
+		String fileKey2 = "eur";
+		String time = "07";
 		if(readDataFromFile){
-			groupSize = 5;
+			groupSize = 3;	//This has no relation to consecutiveWins
 			startWithXToRisk = 320;
 			doubleOrTriple = 2;
 
 			numberOfInstruments = 1;
 			monthsToSimulate = 22;
 			daysPerMonth = 21;		//This needs to be 2 X if fileKey contains 2 currency
-			if(fileKey.length() > 3)
+			if(fileKey.length() > 5)
 				daysPerMonth = daysPerMonth * 2;
 
 			stopOnceTargetWinsReached = true;
 			//stopAtConsecutiveWins = (groupSize/2)+2;
-			stopAtConsecutiveWins = 6;
+			stopAtConsecutiveWins = 3;
+			fileKey = time + fileKey.toLowerCase();
+			if(fileKey2 != null)
+				fileKey = fileKey + time + fileKey2.toLowerCase();
+
 			log.warn("GENERATE WITH REAL DATA FROM FILE");
-			fileKey = fileKey.toLowerCase();
+			log.warn("Reading Data File : dataWL"+ fileKey);
+
+
 		}else{
 			log.warn("GENERATE WITH SIMULATED DATA");
 		}
 
-		log.warn("Group size : " + groupSize);
+		log.warn("\nGroup size : " + groupSize);
 		log.warn("Stop at consecutive wins : " + stopAtConsecutiveWins);
 
 		/**
@@ -273,7 +281,7 @@ public class SillyStrat {
 		}
 
 		int elements = allData.get(0).size() * allData.size();
-		double percent = Utils.getPercentToXDecimal((totalWC * 1.0) / elements, 2)*100;
+		double percent = Utils.getPercentToXDecimal((totalWC * 1.0) / elements, 2) * 100;
 		log.warn("\nNumber of data sets : " + allData.size() + "");
 		log.warn("Total number of W counts : " + (totalWC));
 		log.warn("Total number of elements : " + (elements));
