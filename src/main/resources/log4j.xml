@@ -14,7 +14,7 @@
 	</appender>
 
 	<appender name="default.file" class="org.apache.log4j.FileAppender">
-		<param name="file" value="src/test/resources/logs/simulation_05112016.log" />
+		<param name="file" value="src/test/resources/logs/simulation_08112016.log" />
 		<param name="append" value="false" />
 		<param name="threshold" value="warn" />
 		<layout class="org.apache.log4j.PatternLayout">
