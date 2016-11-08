@@ -59,18 +59,16 @@ public class SillyStrat {
 		//If we read from file, specify the file, file= real data
 		String currency1 = "gbp";
 		String currency2 = "";
-		String time = "08";	//one of 07, 08, 12 or 14=2.oclock
+		String time = "07";	//one of 07, 08, 12 or 14=2.oclock
 
 		if(readDataFromFile){
 			groupSize = 3;	//This has no relation to consecutiveWins
-			startWithXToRisk = 320;
-			doubleOrTriple = 2;
+			startWithXToRisk = 160;
+			doubleOrTriple = 2.38; 	//Wins recorded in file is based on SL=20, W=37
 
 			numberOfInstruments = 1;
 			monthsToSimulate = 22;
 			daysPerMonth = 21;		//This needs to be 2 X if fileKey contains 2 currency
-			if(currency1.length() > 5)
-				daysPerMonth = daysPerMonth * 2;
 
 			stopOnceTargetWinsReached = true;
 			//stopAtConsecutiveWins = (groupSize/2)+2;
@@ -85,6 +83,8 @@ public class SillyStrat {
 			log.warn("GENERATE WITH REAL DATA FROM FILE");
 			log.warn("Reading Data File : dataWL"+ currency1 + ".txt");
 
+			if(currency1.length() > 5)
+				daysPerMonth = daysPerMonth * 2;
 
 		}else{
 			log.warn("GENERATE WITH SIMULATED DATA");
