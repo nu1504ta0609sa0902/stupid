@@ -57,9 +57,10 @@ public class SillyStrat {
 		//-----------------------------------
 
 		//If we read from file, specify the file, file= real data
-		String fileKey = "gbp";
-		String fileKey2 = "eur";
-		String time = "07";
+		String currency1 = "gbp";
+		String currency2 = "";
+		String time = "08";	//one of 07, 08, 12 or 14=2.oclock
+
 		if(readDataFromFile){
 			groupSize = 3;	//This has no relation to consecutiveWins
 			startWithXToRisk = 320;
@@ -68,25 +69,28 @@ public class SillyStrat {
 			numberOfInstruments = 1;
 			monthsToSimulate = 22;
 			daysPerMonth = 21;		//This needs to be 2 X if fileKey contains 2 currency
-			if(fileKey.length() > 5)
+			if(currency1.length() > 5)
 				daysPerMonth = daysPerMonth * 2;
 
 			stopOnceTargetWinsReached = true;
 			//stopAtConsecutiveWins = (groupSize/2)+2;
 			stopAtConsecutiveWins = 3;
-			fileKey = time + fileKey.toLowerCase();
-			if(fileKey2 != null)
-				fileKey = fileKey + time + fileKey2.toLowerCase();
+
+			//Which file to read
+			time = getValidTime(time);
+			currency1 = time + currency1.toLowerCase();
+			if(currency2 != null && !currency2.trim().equals(""))
+				currency1 = currency1 + time + currency2.toLowerCase();
 
 			log.warn("GENERATE WITH REAL DATA FROM FILE");
-			log.warn("Reading Data File : dataWL"+ fileKey);
+			log.warn("Reading Data File : dataWL"+ currency1 + ".txt");
 
 
 		}else{
 			log.warn("GENERATE WITH SIMULATED DATA");
 		}
 
-		log.warn("\nGroup size : " + groupSize);
+		log.warn("Group size : " + groupSize);
 		log.warn("Stop at consecutive wins : " + stopAtConsecutiveWins);
 
 		/**
@@ -131,7 +135,7 @@ public class SillyStrat {
 				//Generate simulated data or load from file
 				List<String> dataWL = null;
 				if(readDataFromFile){
-					dataWL = FileUtils.getDataFromFile(monthCount, numberOfDaysPerMonth, fileKey, "dataWL");
+					dataWL = FileUtils.getDataFromFile(monthCount, numberOfDaysPerMonth, currency1, "dataWL");
 				}else{
 					int maxWinCount = Utils.someRandomValueBetween(winRangeFrom, winRangeTo);
 					dataWL = Utils.getRandomDataWithXPercentOfWins(winsEveryXNumber, numberOfDaysPerMonth, maxWinCount);
@@ -232,6 +236,14 @@ public class SillyStrat {
 				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount, listOfResults);
 
 		log.warn("--------------Entry Completed-------------");
+	}
+
+	private static String getValidTime(String time) {
+		if(time.equals("07") || time.equals("08") || time.equals("12") || time.equals("14")){
+			return time;
+		}else{
+			return "08";
+		}
 	}
 
 	private static void printReportToScreen(List<List<String>> allData, double allWins, double allRisks, int daysPerMonth, int monthsToSimulate, int allNumberOfWinsCount,

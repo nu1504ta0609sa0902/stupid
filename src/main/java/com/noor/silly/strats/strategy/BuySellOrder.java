@@ -9,6 +9,12 @@ import java.util.List;
 
 /**
  * Created by tayyibah on 05/11/2016.
+ *
+ * Aim is to create set of Buy/Sell orders and try and do it for real
+ *
+ * Or check what would happen if you follow it with real data.
+ *
+ *
  */
 public class BuySellOrder {
 
