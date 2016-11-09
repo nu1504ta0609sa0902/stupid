@@ -39,6 +39,7 @@ public class SillyStrat {
 		double winsEveryXNumber = 3;
 		double startWithXToRisk = 160;
 		double doubleOrTriple = 2;
+		double halfIt = 2;
 
 		//If we want to stop as soon as win X number of times in a row
 		boolean stopOnceTargetWinsReached = true;
@@ -60,11 +61,12 @@ public class SillyStrat {
 		String currency1 = "gbp";
 		String currency2 = "";
 		String time = "07";	//one of 07, 08, 12 or 14=2.oclock
-
+		readDataFromFile = true;
 		if(readDataFromFile){
 			groupSize = 3;	//This has no relation to consecutiveWins
 			startWithXToRisk = 160;
 			doubleOrTriple = 2.38; 	//Wins recorded in file is based on SL=20, W=37
+			halfIt = 4;		//Loose half it or more
 
 			numberOfInstruments = 1;
 			monthsToSimulate = 22;
@@ -169,7 +171,7 @@ public class SillyStrat {
 						consecutiveWins++;
 					} else {
 						// Half it
-						currentValueOfXToRisk = currentValueOfXToRisk / 2;
+						currentValueOfXToRisk = currentValueOfXToRisk / halfIt;
 						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
 						log.info(x + ", " + preAmount + " = " + currentValueOfXToRisk);
 						looseCount++;
