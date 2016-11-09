@@ -33,7 +33,7 @@ public class SillyStrat {
 		 */
 
 		//Controls configuration either SIMULATED OR FILE DATA
-		boolean readDataFromFile = true;
+		boolean readDataFromFile = false;
 
 		int groupSize = 3;		//This has no relation to consecutiveWins
 		double winsEveryXNumber = 3;
@@ -60,24 +60,24 @@ public class SillyStrat {
 		//If we read from file, specify the file, file= real data
 		String currency1 = "gbp";
 		String currency2 = "";
-		String time = "07";	//one of 07, 08, 12 or 14=2.oclock
+		String time = "14";	//one of 07, 08, 12 or 14=2.oclock
 		readDataFromFile = true;
 		if(readDataFromFile){
 			groupSize = 3;	//This has no relation to consecutiveWins
 			startWithXToRisk = 160;
-			doubleOrTriple = 2.38; 	//Wins recorded in file is based on SL=20, W=37
-			halfIt = 4;		//Loose half it or more
+			doubleOrTriple = 2; 	//Wins recorded in file is based on SL=20, W=37
+			halfIt = 2;		//Loose half it or more
 
 			numberOfInstruments = 1;
 			monthsToSimulate = 22;
 			daysPerMonth = 21;		//This needs to be 2 X if fileKey contains 2 currency
 
 			stopOnceTargetWinsReached = true;
-			//stopAtConsecutiveWins = (groupSize/2)+2;
 			stopAtConsecutiveWins = 3;
+			//stopAtConsecutiveWins = (groupSize/2)+2;
 
 			//Which file to read
-			time = getValidTime(time);
+			time = getValidTime(time, currency1);
 			currency1 = time + currency1.toLowerCase();
 			if(currency2 != null && !currency2.trim().equals(""))
 				currency1 = currency1 + time + currency2.toLowerCase();
@@ -216,7 +216,7 @@ public class SillyStrat {
 				} // Finished looping a single data set
 
 				printResults(key, dataWL, startWithXToRisk, winCount+looseCount, winCount, acWinsAmount, acRiskAmount, sumOfDifference, "Data set summary");
-
+				consecutiveWins = 0;
 				numberOfMonthsCounter--;
 
 				//Keep track of winnings
@@ -240,12 +240,18 @@ public class SillyStrat {
 		log.warn("--------------Entry Completed-------------");
 	}
 
-	private static String getValidTime(String time) {
-		if(time.equals("07") || time.equals("08") || time.equals("12") || time.equals("14")){
-			return time;
+	private static String getValidTime(String time, String currency1) {
+
+		if(currency1.equals("wins") || currency1.equals("loose")){
+			time = "";
 		}else{
-			return "08";
+			if(time.equals("07") || time.equals("08") || time.equals("12") || time.equals("14")){
+				return time;
+			}else{
+				return "08";
+			}
 		}
+		return time;
 	}
 
 	private static void printReportToScreen(List<List<String>> allData, double allWins, double allRisks, int daysPerMonth, int monthsToSimulate, int allNumberOfWinsCount,
