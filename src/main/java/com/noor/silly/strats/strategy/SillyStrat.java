@@ -34,6 +34,7 @@ public class SillyStrat {
 
 		//Controls configuration either SIMULATED OR FILE DATA
 		boolean readDataFromFile = false;
+		boolean showDetailed = true;
 
 		int groupSize = 3;		//This has no relation to consecutiveWins
 		double winsEveryXNumber = 3;
@@ -52,21 +53,22 @@ public class SillyStrat {
 		//Generate win range between x and y
 		int winRangeFrom = 4;
 		int winRangeTo = 10;
+		int stopLoss = 20;
 
 		//-----------------------------------
 		//Overide with file configuration
 		//-----------------------------------
 
 		//If we read from file, specify the file, file= real data
-		String currency1 = "dji";
+		String currency1 = "gbp";
 		String currency2 = "";
-		String time = "08";	//one of 07, 08, 12 or 14=2pm
+		String time = "07";	//one of 07, 08, 12 or 14=2pm
 		readDataFromFile = true;
 		if(readDataFromFile){
 			groupSize = 3;	//This has no relation to consecutiveWins
 			startWithXToRisk = 320;
 			doubleOrTriple = 2; 	//Wins recorded in file is based on SL=20, W=37
-			halfIt = 2;		//Loose half it or more
+			halfIt = 2;				//Risk 2=50%, 3=33%, 4=25% etc
 
 			numberOfInstruments = 1;
 			monthsToSimulate = 22;
@@ -103,11 +105,11 @@ public class SillyStrat {
 
 		// Group size, X to risk at beginning of each group, if set to true
 		// it will base it on SL and startWithXToRisk amount
-		//boolean calculateStartXAgainstSL = true;
-		//if (calculateStartXAgainstSL) {
-//			int sl = 25;
-//			startWithXToRisk = Utils.getInitialRiskAmount(groupSize, sl, calculateStartXAgainstSL);
-//		}
+		//		boolean calculateStartXAgainstSL = true;
+		//		if (calculateStartXAgainstSL) {
+		//			int sl = 50;
+		//			startWithXToRisk = Utils.getInitialRiskAmount(groupSize, sl, calculateStartXAgainstSL);
+		//		}
 		int toAdd = (int) (startWithXToRisk / 2);
 
 		//----------------------------------------------------
@@ -131,6 +133,7 @@ public class SillyStrat {
 			int monthCount = 0;
 			//Do for each months
 			do {
+				log.warn("\nR=Risk, SA=Starting Amount, AA=After Amount ");
 				monthCount++;
 				String key = Utils.generateRandomKey("Key");
 
@@ -166,14 +169,18 @@ public class SillyStrat {
 						// Double it
 						currentValueOfXToRisk = currentValueOfXToRisk * doubleOrTriple;
 						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
-						log.info(x + ", " + preAmount + " = " + currentValueOfXToRisk);
+						showDetailedWL(showDetailed, x, preAmount, halfIt, currentValueOfXToRisk, stopLoss);
+						//log.info(x + ", R=" + (preAmount/halfIt)+ ", SA=" + preAmount + " => AA=" + currentValueOfXToRisk);
+						//log.info(x + ", " + preAmount + " => " + currentValueOfXToRisk);
 						winCount++;
 						consecutiveWins++;
 					} else {
 						// Half it
 						currentValueOfXToRisk = currentValueOfXToRisk / halfIt;
 						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
-						log.info(x + ", " + preAmount + " = " + currentValueOfXToRisk);
+						showDetailedWL(showDetailed, x, preAmount, halfIt, currentValueOfXToRisk, stopLoss);
+						//log.info(x + ", R=" + (preAmount/halfIt) + ", " + preAmount + " => " + currentValueOfXToRisk);
+						//log.info(x + ", " + preAmount + " => " + currentValueOfXToRisk);
 						looseCount++;
 						if(consecutiveWins < stopAtConsecutiveWins)
 							consecutiveWins = 0;
@@ -215,7 +222,7 @@ public class SillyStrat {
 
 				} // Finished looping a single data set
 
-				printResults(key, dataWL, startWithXToRisk, winCount+looseCount, winCount, acWinsAmount, acRiskAmount, sumOfDifference, "Data set summary");
+				printResults(key, dataWL, startWithXToRisk, winCount+looseCount, winCount, acWinsAmount, acRiskAmount, sumOfDifference, "Data set summary", halfIt, stopLoss);
 				consecutiveWins = 0;
 				numberOfMonthsCounter--;
 
@@ -238,6 +245,17 @@ public class SillyStrat {
 				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount, listOfResults);
 
 		log.warn("--------------Entry Completed-------------");
+	}
+
+	private static void showDetailedWL(boolean showDetailed, String x, double preAmount, double halfIt, double currentValueOfXToRisk, double stopLoss) {
+		if(showDetailed) {
+			double risk = Utils.getPercentToXDecimal(preAmount / halfIt, 2);
+			double app = Utils.getPercentToXDecimal(risk/stopLoss, 2);
+
+			log.info(x + ", SA=" + preAmount + " => AA=" + currentValueOfXToRisk + " \tR=" + risk + "\tAPP=" + app );
+		}else {
+			log.info(x + ", " + preAmount + " => " + currentValueOfXToRisk);
+		}
 	}
 
 	private static String getValidTime(String time, String currency1) {
@@ -337,7 +355,7 @@ public class SillyStrat {
 	}
 
 	public static void printResults(String key, List<String> dataWL, double startWithXToRisk, int numberOfItems,
-									int winCount, double acWinsAmount, double acRiskAmount, double sumOfDiffernce, String message) {
+									int winCount, double acWinsAmount, double acRiskAmount, double sumOfDiffernce, String message, double halfIt, double stopLoss) {
 
 		log.warn("\n-------" + message + "------- : ");
 		log.warn("Data : " + dataWL);
@@ -346,7 +364,10 @@ public class SillyStrat {
 		log.warn("Loss count : " + (numberOfItems - winCount));
 		if(numberOfItems > 0)
 			log.warn("W Percentage : " + ((winCount * 100 / numberOfItems)) + "%");
-		log.warn("Starting Risk : " + startWithXToRisk);
+		log.warn("Starting Amount : " + startWithXToRisk);
+		log.warn("Starting Risk : " + Utils.getPercentToXDecimal(startWithXToRisk/halfIt, 2));
+		log.warn("Amount Per Pip : " + Utils.getPercentToXDecimal((startWithXToRisk/halfIt)/stopLoss, 2));
+
 		log.warn("Account W Amount : " + Utils.getPercentToXDecimal(acWinsAmount, 2));
 		log.warn("Risk Amount : " + acRiskAmount);
 		if (sumOfDiffernce < 0) {

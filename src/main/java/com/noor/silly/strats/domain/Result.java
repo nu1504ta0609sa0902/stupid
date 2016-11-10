@@ -86,10 +86,10 @@ public class Result {
         totalAmountLoose = Utils.getPercentToXDecimal(totalAmountLoose, 2);
 
         String xx = //"data : " + data +
-                "Risk £= " + startWithXToRisk + "\twinCount=" + winCount +"\tlooseCount=" + looseCount +"\ttotalPlayed=" + (winCount + looseCount)
+                "Initial Amount £= " + startWithXToRisk + "\twinCount=" + winCount +"\tlooseCount=" + looseCount +"\ttotalPlayed=" + (winCount + looseCount)
                 + "\twinAmount=" + winForThisDataSet + "\tlooseAmount=" + looseForThisDataSet + "\tDIFFERENCE=" + Utils.getPercentToXDecimal((winForThisDataSet - looseForThisDataSet), 2)
                 + "\twinTotal=" + totalAmountWin+ "\tlooseTotal=" + totalAmountLoose + "\tDIFFERENCE_TOTAL=" + Utils.getPercentToXDecimal((totalAmountWin - totalAmountLoose), 2)
-                + "\nData=" + data + ", W=" + calculateWinCount(data) + ", Key=" + key
+                + "  \tData=" + data + "\tW=" + calculateWinCount(data) + ", Key=" + key
                 + "";
 
         return xx;
