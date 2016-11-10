@@ -71,8 +71,6 @@ public class Utils {
 		}
 	}
 
-
-
 	public static String getRandomWLValue(double winsEveryX) {
 		int randomNumber = new Random().nextInt(9000) + 1000;
 		double reminder = randomNumber % winsEveryX;
@@ -117,10 +115,8 @@ public class Utils {
 			}
 
 			if (time % 2 == 0) {
-				//System.out.println("Buy");
 				listOfBuySellOrders.add("Buy");
 			}else{
-				//System.out.println("Sell");
 				listOfBuySellOrders.add("Sell");
 			}
 		}
