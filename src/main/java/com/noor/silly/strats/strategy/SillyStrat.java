@@ -58,13 +58,13 @@ public class SillyStrat {
 		//-----------------------------------
 
 		//If we read from file, specify the file, file= real data
-		String currency1 = "gbp";
+		String currency1 = "dji";
 		String currency2 = "";
-		String time = "14";	//one of 07, 08, 12 or 14=2.oclock
+		String time = "08";	//one of 07, 08, 12 or 14=2pm
 		readDataFromFile = true;
 		if(readDataFromFile){
 			groupSize = 3;	//This has no relation to consecutiveWins
-			startWithXToRisk = 160;
+			startWithXToRisk = 320;
 			doubleOrTriple = 2; 	//Wins recorded in file is based on SL=20, W=37
 			halfIt = 2;		//Loose half it or more
 
@@ -226,7 +226,7 @@ public class SillyStrat {
 				allNumberOfLooseCount = allNumberOfLooseCount + looseCount;
 
 				//Store results for reporting
-				Result result = getResults(startWithXToRisk, winCount, looseCount, allWins, allRisks, acWinsAmount, acRiskAmount, dataWL);
+				Result result = getResults(startWithXToRisk, winCount, looseCount, allWins, allRisks, acWinsAmount, acRiskAmount, dataWL, key);
 
 				listOfResults.add(result);
 
@@ -265,7 +265,7 @@ public class SillyStrat {
 				numberOfInstruments, totalCount);
 	}
 
-	private static Result getResults(double startWithXToRisk, int winCount, int looseCount, double allWins, double allRisks, double acWinsAmount, double acRiskAmount, List<String> dataWL) {
+	private static Result getResults(double startWithXToRisk, int winCount, int looseCount, double allWins, double allRisks, double acWinsAmount, double acRiskAmount, List<String> dataWL, String key) {
 		Result result = new Result(startWithXToRisk);
 		result.setWinCount(winCount);
 		result.setLooseCount(looseCount);
@@ -274,6 +274,7 @@ public class SillyStrat {
 		result.setWinThisDataSet(acWinsAmount);
 		result.setLooseThisDataset(acRiskAmount);
 		result.addDataSet(dataWL);
+		result.setKey(key);
 		return result;
 	}
 
@@ -281,14 +282,14 @@ public class SillyStrat {
 		log.warn("\nData Sets : ");
 		int totalWC = 0;
 		if (allData != null) {
-			for (List<String> x : allData) {
+			for (List<String> rowOfData : allData) {
 				int wc = 0;
-				for(String w: x){
+				for(String w: rowOfData){
 					if(w.equals("W")){
 						wc++;
 					}
 				}
-				log.warn("" + x + ", W=" + wc);
+				//log.warn("" + rowOfData + ", W=" + wc);
 				totalWC = totalWC + wc;
 				wc = 0;
 			}
@@ -296,8 +297,8 @@ public class SillyStrat {
 		}
 
 		System.out.println();
-		for(Result r: listOfResults){
-			System.out.println(r);
+		for(Result aResult: listOfResults){
+			System.out.println(aResult);
 		}
 
 		int elements = allData.get(0).size() * allData.size();

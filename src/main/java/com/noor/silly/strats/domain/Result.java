@@ -22,6 +22,7 @@ public class Result {
     private List<String> data;
     private double winForThisDataSet;
     private double looseForThisDataSet;
+    private String key;
 
     public Result(double startWithXToRisk){
         this.startWithXToRisk = startWithXToRisk;
@@ -73,6 +74,9 @@ public class Result {
         this.looseForThisDataSet = acRiskAmount;
     }
 
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     @Override
     public String toString() {
@@ -85,11 +89,20 @@ public class Result {
                 "Risk £= " + startWithXToRisk + "\twinCount=" + winCount +"\tlooseCount=" + looseCount +"\ttotalPlayed=" + (winCount + looseCount)
                 + "\twinAmount=" + winForThisDataSet + "\tlooseAmount=" + looseForThisDataSet + "\tDIFFERENCE=" + Utils.getPercentToXDecimal((winForThisDataSet - looseForThisDataSet), 2)
                 + "\twinTotal=" + totalAmountWin+ "\tlooseTotal=" + totalAmountLoose + "\tDIFFERENCE_TOTAL=" + Utils.getPercentToXDecimal((totalAmountWin - totalAmountLoose), 2)
-                + "\t\t" + data
+                + "\nData=" + data + ", W=" + calculateWinCount(data) + ", Key=" + key
                 + "";
-
-        //log.warn(xx);
 
         return xx;
     }
+
+    private int calculateWinCount(List<String> data) {int totalWC = 0;
+        int wc = 0;
+        for(String w: data){
+            if(w.equals("W")){
+                wc++;
+            }
+        }
+        return wc;
+    }
+
 }
