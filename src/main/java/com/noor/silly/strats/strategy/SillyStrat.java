@@ -60,9 +60,9 @@ public class SillyStrat {
 		//-----------------------------------
 
 		//If we read from file, specify the file, file= real data
-		String currency1 = "gbp";
+		String currency1 = "eur";
 		String currency2 = "";
-		String time = "07";	//one of 07, 08, 12 or 14=2pm
+		String time = "08";	//one of 07, 08, 12 or 14=2pm
 		readDataFromFile = true;
 		if(readDataFromFile){
 			groupSize = 3;	//This has no relation to consecutiveWins
@@ -116,6 +116,7 @@ public class SillyStrat {
 		// Calculation total place holders for all instruments
 		//----------------------------------------------------
 		int consecutiveWins = 0;
+		int consecutiveLosses = 0;
 		double allWins = 0;
 		double allRisks = 0;
 		int allNumberOfWinsCount = 0;
@@ -174,6 +175,8 @@ public class SillyStrat {
 						//log.info(x + ", " + preAmount + " => " + currentValueOfXToRisk);
 						winCount++;
 						consecutiveWins++;
+						if(consecutiveLosses < stopAtConsecutiveWins)
+							consecutiveLosses = 0;
 					} else {
 						// Half it
 						currentValueOfXToRisk = currentValueOfXToRisk / halfIt;
@@ -182,6 +185,7 @@ public class SillyStrat {
 						//log.info(x + ", R=" + (preAmount/halfIt) + ", " + preAmount + " => " + currentValueOfXToRisk);
 						//log.info(x + ", " + preAmount + " => " + currentValueOfXToRisk);
 						looseCount++;
+						consecutiveLosses++;
 						if(consecutiveWins < stopAtConsecutiveWins)
 							consecutiveWins = 0;
 					}
@@ -215,6 +219,10 @@ public class SillyStrat {
 							consecutiveWins = 0;
 							break;
 						}
+						if(stopOnceTargetWinsReached && consecutiveLosses>=stopAtConsecutiveWins){
+							consecutiveLosses = 0;
+							break;
+						}
 
 					}
 
@@ -224,6 +232,7 @@ public class SillyStrat {
 
 				printResults(key, dataWL, startWithXToRisk, winCount+looseCount, winCount, acWinsAmount, acRiskAmount, sumOfDifference, "Data set summary", halfIt, stopLoss);
 				consecutiveWins = 0;
+				consecutiveLosses = 0;
 				numberOfMonthsCounter--;
 
 				//Keep track of winnings
