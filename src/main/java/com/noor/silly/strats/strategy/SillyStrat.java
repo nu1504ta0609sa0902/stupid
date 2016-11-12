@@ -47,7 +47,7 @@ public class SillyStrat {
 		int stopAtConsecutiveWins = 3;
 
 		int numberOfInstruments = 1;	//Gbp/usd, eur/usd etc
-		int monthsToSimulate = 3;
+		int monthsToSimulate = 12;
 		int daysPerMonth = 21;
 
 		//Generate win range between x and y
@@ -58,9 +58,10 @@ public class SillyStrat {
 		//-----------------------------------
 		//Overide with file configuration
 		//-----------------------------------
+		int consectiveReached = 0;
 
 		//If we read from file, specify the file, file= real data
-		String currency1 = "eur";
+		String currency1 = "gbp";
 		String currency2 = "";
 		String time = "08";	//one of 07, 08, 12 or 14=2pm
 		readDataFromFile = true;
@@ -116,7 +117,7 @@ public class SillyStrat {
 		// Calculation total place holders for all instruments
 		//----------------------------------------------------
 		int consecutiveWins = 0;
-		int consecutiveLosses = 0;
+
 		double allWins = 0;
 		double allRisks = 0;
 		int allNumberOfWinsCount = 0;
@@ -171,21 +172,16 @@ public class SillyStrat {
 						currentValueOfXToRisk = currentValueOfXToRisk * doubleOrTriple;
 						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
 						showDetailedWL(showDetailed, x, preAmount, halfIt, currentValueOfXToRisk, stopLoss);
-						//log.info(x + ", R=" + (preAmount/halfIt)+ ", SA=" + preAmount + " => AA=" + currentValueOfXToRisk);
-						//log.info(x + ", " + preAmount + " => " + currentValueOfXToRisk);
+
 						winCount++;
 						consecutiveWins++;
-						if(consecutiveLosses < stopAtConsecutiveWins)
-							consecutiveLosses = 0;
 					} else {
 						// Half it
 						currentValueOfXToRisk = currentValueOfXToRisk / halfIt;
 						currentValueOfXToRisk = Utils.getPercentToXDecimal(currentValueOfXToRisk, 2);
 						showDetailedWL(showDetailed, x, preAmount, halfIt, currentValueOfXToRisk, stopLoss);
-						//log.info(x + ", R=" + (preAmount/halfIt) + ", " + preAmount + " => " + currentValueOfXToRisk);
-						//log.info(x + ", " + preAmount + " => " + currentValueOfXToRisk);
+
 						looseCount++;
-						consecutiveLosses++;
 						if(consecutiveWins < stopAtConsecutiveWins)
 							consecutiveWins = 0;
 					}
@@ -216,12 +212,11 @@ public class SillyStrat {
 
 						//If we want to stop as soon as we win X number of times in a row
 						if(stopOnceTargetWinsReached && consecutiveWins>=stopAtConsecutiveWins){
-							consecutiveWins = 0;
-							break;
-						}
-						if(stopOnceTargetWinsReached && consecutiveLosses>=stopAtConsecutiveWins){
-							consecutiveLosses = 0;
-							break;
+							consectiveReached++;
+							if(consectiveReached == 2)
+								break;
+							else
+								consecutiveWins = 0;
 						}
 
 					}
@@ -232,7 +227,7 @@ public class SillyStrat {
 
 				printResults(key, dataWL, startWithXToRisk, winCount+looseCount, winCount, acWinsAmount, acRiskAmount, sumOfDifference, "Data set summary", halfIt, stopLoss);
 				consecutiveWins = 0;
-				consecutiveLosses = 0;
+				consectiveReached = 0;
 				numberOfMonthsCounter--;
 
 				//Keep track of winnings
@@ -253,6 +248,7 @@ public class SillyStrat {
 		printReportToScreen(allData, allWins, allRisks, daysPerMonth, monthsToSimulate, allNumberOfWinsCount, "Sum Of ALL",
 				numberOfInstruments - 1, allNumberOfLooseCount + allNumberOfWinsCount, listOfResults);
 
+		log.warn("File name : " + currency1);
 		log.warn("--------------Entry Completed-------------");
 	}
 
